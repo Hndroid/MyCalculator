@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     tvShow.setText("0");
                     prefix.setText("");
-                    vbegin = true;
+                    vbegin = true;//重新输入
                     tip_i = 0;
                     tip_lock = true;
                 }
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                 tiptype1 = 2;
             } else if (tipcommand1.compareTo(".") == 0) {
                 tiptype1 = 3;
-            } else if ("0123456789Eπ".indexOf(tipcommand1) != -1) {
+            } else if ("0123456789".indexOf(tipcommand1) != -1) {
                 tiptype1 = 4;
             } else if ("+-×÷".indexOf(tipcommand1) != -1) {
                 tiptype1 = 5;
@@ -297,6 +297,8 @@ public class MainActivity extends AppCompatActivity {
                 tiptype1 = 6;
             } else if ("sincostanloglnn!".indexOf(tipcommand1) != -1) {
                 tiptype1 = 7;
+            } else if ("Eπ".indexOf(tipcommand1) != -1){
+                tiptype1 = 8;
             }
             // 定义欲输入的按键类型
             if (tipcommand2.compareTo("(") == 0) {
@@ -305,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 tiptype2 = 2;
             } else if (tipcommand2.compareTo(".") == 0) {
                 tiptype2 = 3;
-            } else if ("0123456789Eπ".indexOf(tipcommand2) != -1) {
+            } else if ("0123456789".indexOf(tipcommand2) != -1) {
                 tiptype2 = 4;
             } else if ("+-×÷".indexOf(tipcommand2) != -1) {
                 tiptype2 = 5;
@@ -313,6 +315,8 @@ public class MainActivity extends AppCompatActivity {
                 tiptype2 = 6;
             } else if ("sincostanloglnn!".indexOf(tipcommand2) != -1) {
                 tiptype2 = 7;
+            } else if ("Eπ".indexOf(tipcommand2) != -1) {
+                tiptype2 = 8;
             }
 
             switch (tiptype1) {
@@ -324,22 +328,22 @@ public class MainActivity extends AppCompatActivity {
                         Tipcode1 = 1;
                     break;
                 case 2:
-                    // 右括号后面接左括号，数字，“+-x÷sin^...”
+                    // 右括号后面接左括号，数字，“小数点”，“sincostanloglnn!”，“Eπ”
                     if (tiptype2 == 1 || tiptype2 == 3 || tiptype2 == 4
-                            || tiptype2 == 7)
+                            || tiptype2 == 7 || tiptype2 == 8)
                         Tipcode1 = 2;
                     break;
                 case 3:
-                    // “.”后面接左括号或者“sincos...”
-                    if (tiptype2 == 1 || tiptype2 == 7)
+                    // “.”后面接左括号或者“sincos...”, “Eπ”
+                    if (tiptype2 == 1 || tiptype2 == 7 || tiptype2 == 8)
                         Tipcode1 = 3;
                     // 连续输入两个“.”
                     if (tiptype2 == 3)
                         Tipcode1 = 8;
                     break;
                 case 4:
-                    // 数字后面直接接左括号或者“sincos...”
-                    if (tiptype2 == 1 || tiptype2 == 7)
+                    // 数字后面直接接左括号或者“sincosEπ”
+                    if (tiptype2 == 1 || tiptype2 == 7 || tiptype2 == 8)
                         Tipcode1 = 4;
                     break;
                 case 5:
@@ -358,6 +362,12 @@ public class MainActivity extends AppCompatActivity {
                     if (tiptype2 == 2 || tiptype2 == 5 || tiptype2 == 6
                             || tiptype2 == 7)
                         Tipcode1 = 7;
+                    break;
+                case 8:
+                    //"Eπ"后面跟 左括号， 小数点， 数字，sincos...， Eπ
+                    if (tiptype2 == 1 || tiptype2 == 3 || tiptype2 == 4
+                            || tiptype2 == 7 || tiptype2 == 8)
+                        Tipcode1 = 8;
                     break;
             }
         }
@@ -438,43 +448,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        // 若命令式以下之一，则显示相应的帮助信息
-        if (tipcommand2.compareTo("MC") == 0)
-            Tipcode2 = 1;
-        if (tipcommand2.compareTo("C") == 0)
-            Tipcode2 = 2;
-        if (tipcommand2.compareTo("DRG") == 0)
-            Tipcode2 = 3;
-        if (tipcommand2.compareTo("←") == 0)
-            Tipcode2 = 4;
-        if (tipcommand2.compareTo("sin") == 0)
-            Tipcode2 = 5;
-        if (tipcommand2.compareTo("cos") == 0)
-            Tipcode2 = 6;
-        if (tipcommand2.compareTo("tan") == 0)
-            Tipcode2 = 7;
-        if (tipcommand2.compareTo("log") == 0)
-            Tipcode2 = 8;
-        if (tipcommand2.compareTo("ln") == 0)
-            Tipcode2 = 9;
-        if (tipcommand2.compareTo("n!") == 0)
-            Tipcode2 = 10;
-        if (tipcommand2.compareTo("√") == 0)
-            Tipcode2 = 11;
-        if (tipcommand2.compareTo("^") == 0)
-            Tipcode2 = 12;
-        // 显示帮助和错误信息
-        TipShow(bracket, Tipcode1, Tipcode2, tipcommand1, tipcommand2);
-    }
 
-    /*
-     * 反馈Tip信息，加强人机交互，与TipChecker()配合使用
-     */
-    private void TipShow(int bracket, int tipcode1, int tipcode2,
-                         String tipcommand1, String tipcommand2) {
-
-        String tipmessage = "";
-        if (tipcode1 != 0)
+        if (Tipcode1 != 0)
             tip_lock = false;// 表明输入有误
     }
 
