@@ -263,8 +263,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void TipChecker(String tipcommand1, String tipcommand2) {
 
-        // Tipcode1表示错误类型，Tipcode2表示名词解释类型
-        int Tipcode1 = 0, Tipcode2 = 0;
+        // Tipcode1表示错误类型,0 表示没有错误类型
+        int Tipcode1 = 0;
         // 表示命令类型
         int tiptype1 = 0, tiptype2 = 0;
         // 括号数
@@ -276,8 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 || tipcommand2.compareTo("×") == 0
                 || tipcommand2.compareTo("+") == 0
                 || tipcommand2.compareTo(")") == 0
-                || tipcommand2.compareTo("√") == 0 || tipcommand2
-                .compareTo("^") == 0)) {
+                || tipcommand2.compareTo("^") == 0)) {
             Tipcode1 = -1;
         }
         // 定义存储字符串中最后一位的类型
@@ -293,9 +292,9 @@ public class MainActivity extends AppCompatActivity {
                 tiptype1 = 4;
             } else if ("+-×÷".indexOf(tipcommand1) != -1) {
                 tiptype1 = 5;
-            } else if ("√^".indexOf(tipcommand1) != -1) {
+            } else if ("^".indexOf(tipcommand1) != -1) {
                 tiptype1 = 6;
-            } else if ("sincostanloglnn!".indexOf(tipcommand1) != -1) {
+            } else if ("sincostanloglnn!√".indexOf(tipcommand1) != -1) {
                 tiptype1 = 7;
             } else if ("Eπ".indexOf(tipcommand1) != -1){
                 tiptype1 = 8;
@@ -311,9 +310,9 @@ public class MainActivity extends AppCompatActivity {
                 tiptype2 = 4;
             } else if ("+-×÷".indexOf(tipcommand2) != -1) {
                 tiptype2 = 5;
-            } else if ("√^".indexOf(tipcommand2) != -1) {
+            } else if ("^".indexOf(tipcommand2) != -1) {
                 tiptype2 = 6;
-            } else if ("sincostanloglnn!".indexOf(tipcommand2) != -1) {
+            } else if ("sincostanloglnn!√".indexOf(tipcommand2) != -1) {
                 tiptype2 = 7;
             } else if ("Eπ".indexOf(tipcommand2) != -1) {
                 tiptype2 = 8;
@@ -403,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
                 Tipcode1 = 8;
             }
         }
+
         // 检测右括号是否匹配
         if (Tipcode1 == 0 && tipcommand2.compareTo(")") == 0) {
             int tip_right_bracket = 0;
@@ -574,16 +574,17 @@ public class MainActivity extends AppCompatActivity {
             while (i < expression.length()) {
                 ch = expression.charAt(i);
                 // 判断正负数
+                // 取得数字，并将正负符号转移给数字
                 if (i == 0) {
                     if (ch == '-')
-                        flag = -1;
+                        flag = -1;//说明首个数字为负数
                 } else if (expression.charAt(i - 1) == '(' && ch == '-')
-                    flag = -1;
-                // 取得数字，并将正负符号转移给数字
+                    flag = -1;//例如 (-X.....
                 if (ch <= '9' && ch >= '0' || ch == '.' || ch == 'E' || ch == 'π') {
                     num = expToken.nextToken();
                     ch_gai = ch;
                     // 取得整个数字
+                    // 并且把 i 迭代到一组数字的最后一个
                     while (i < expression.length() && (ch_gai <= '9' && ch_gai >= '0' || ch_gai == '.' || ch_gai == 'E' || ch == 'π')) {
                         ch_gai = expression.charAt(i++);
                     }
@@ -637,11 +638,11 @@ public class MainActivity extends AppCompatActivity {
                         case 'g':
                         case 'l':
                         case '!':
+                        case '√':
                             weightTemp = 3 + weightPlus;
                             break;
                         // 其余优先级为4
                         // case '^':
-                        // case '√':
                         default:
                             weightTemp = 4 + weightPlus;
                             break;
@@ -674,14 +675,13 @@ public class MainActivity extends AppCompatActivity {
                                     number[topNum - 2] /= number[topNum - 1];
                                     break;
                                 case '√':
-                                    if (number[topNum - 1] == 0
-                                            || (number[topNum - 2] < 0 && number[topNum - 1] % 2 == 0)) {
+                                    if (number[topNum - 1] == 0) {
                                         showError(2, str_old);
                                         return;
                                     }
-                                    number[topNum - 2] = Math.pow(
-                                            number[topNum - 2],
-                                            1 / number[topNum - 1]);
+                                    number[topNum - 1] = Math.sqrt(
+                                            number[topNum - 1]);
+                                    topNum++;//为了对消该 switch 括号外的 topNum--;
                                     break;
                                 case '^':
                                     number[topNum - 2] = Math.pow(
@@ -780,13 +780,12 @@ public class MainActivity extends AppCompatActivity {
                         number[topNum - 2] /= number[topNum - 1];
                         break;
                     case '√':
-                        if (number[topNum - 1] == 0
-                                || (number[topNum - 2] < 0 && number[topNum - 1] % 2 == 0)) {
+                        if (number[topNum - 1] == 0) {
                             showError(2, str_old);
                             return;
                         }
-                        number[topNum - 2] = Math.pow(number[topNum - 2],
-                                1 / number[topNum - 1]);
+                        number[topNum - 1] = Math.sqrt(number[topNum - 1]);
+                        topNum++;
                         break;
                     case '^':
                         number[topNum - 2] = Math.pow(number[topNum - 2],
@@ -856,17 +855,17 @@ public class MainActivity extends AppCompatActivity {
             }
             // 输出最终结果
             prefix.setText(str_old);
-            tvShow.setText(" = " + String.valueOf(FP(number[0])));
+            tvShow.setText(" = " + String.valueOf(checkResult(number[0])));
         }
 
         /*
          * FP = floating point 控制小数位数，达到精度 否则会出现
          * 0.6-0.2=0.39999999999999997的情况，用FP即可解决，使得数为0.4 本格式精度为15位
          */
-        public double FP(double n) {
+        public double checkResult(double n) {
             // NumberFormat format=NumberFormat.getInstance(); //创建一个格式化类f
             // format.setMaximumFractionDigits(18); //设置小数位的格式
-            DecimalFormat format = new DecimalFormat("0.###");
+            DecimalFormat format = new DecimalFormat("0.#####");
             return Double.parseDouble(format.format(n));
         }
 
