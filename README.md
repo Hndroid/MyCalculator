@@ -11,7 +11,7 @@
 
 > 下面是效果图
 
-![Peek 2017-08-11 15-17](http://ouit3bg5b.bkt.clouddn.com/up-z2.qiniu.com.gif)
+![Peek 2017-08-11 15-17](http://baihonghua.cn/up-z2.qiniu.com.gif)
 
 > 注释：
 - 如果您感兴趣， 欢迎 clone ;
